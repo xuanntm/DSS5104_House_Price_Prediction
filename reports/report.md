@@ -20,11 +20,22 @@
  16  statezip       9200 non-null   object 
  17  country        9200 non-null   object 
 ```
+### Data cleasing:
+```
+    Remove the duplicate Data (entire column is duplicated)
+    we wont remove outliner (~1%) and use clip data to handle outliner (~1%)
+    Country Column: remove 
+    Date : convert Date time to Date
+    
+```
+### Feature Engineering
+```
+Including:  
 
-```
-shall we remove outliner (~1%) or we use clip data to handle outliner (~1%) ?
-```
-```
+1. Log10 for Price Column : because the price distribution is right tail
+
+2. Numberic data exploration
+
 === TOP PRICE CORRELATIONS ===
 sqft_living      0.694668
 sqft_above       0.594288
@@ -76,6 +87,11 @@ Market Value: In real estate, 1,000 sqft of "above-ground" space is usually valu
 Redundancy: Since keeping all three provides zero new information to the model, but creates massive mathematical noise.
 Interpretability: You can tell a user exactly how much a basement renovation adds to their home value versus an attic extension.
 
+House_age = date - Yr_built
+yr_renovated -> transform to binary data: either 1 with year or 0
+Renovated_age = date - yr_renovated. (if yr_renovated = 1 or put 0)
+
+view -> 
 ```
 ```
 Categorical Feature
@@ -87,6 +103,8 @@ Feature	Type	Recommendation	Reason
 | waterfront | Binary   | Keep as 0/1                 | It’s already numeric (0=No, 1=Yes), which is perfect for models.                                      | 
 | city       | Nominal  | Target Encoding or One-Hot  | Cities have no "order." If you have many cities, use Target Encoding to avoid creating 100+ columns.  |
 | yr_built   | Temporal | Binning or Age              | Don't treat this as a category. Transform it into house_age = current_year - yr_built                 |  
+
+
 
 ```
 

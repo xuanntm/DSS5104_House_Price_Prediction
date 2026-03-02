@@ -37,9 +37,7 @@ house-price-analysis/
 
 ```
 
-
 ```
-
 # Create virtual environment
 # python -m venv venv
 python3.12 -m venv venv # to use a stable runtime version
@@ -47,12 +45,11 @@ python3.12 -m venv venv # to use a stable runtime version
 # Activate virtual environment
 # On Windows:
 venv\Scripts\activate
+
 # On macOS/Linux:
 source venv/bin/activate
-
 # First, upgrade pip, setuptools, and wheel
 python3.12 -m pip install --upgrade pip setuptools wheel
-
 # Install build tools
 python3.12 -m pip install --upgrade build
 # Set environment variables for M2 Mac
@@ -62,8 +59,11 @@ export LDFLAGS="-L/opt/homebrew/lib"
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
-# Launch Jupyter Lab
-jupyter lab
-
+### .env config 
+```
+DATA_SOURCE_PATH=../data/raw/
+HOUSE_DATASET_FILENAME=house_dataset.csv
+SOURCE_PATH=../src
 ```

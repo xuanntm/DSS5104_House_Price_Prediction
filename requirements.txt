@@ -36,3 +36,5 @@ pytest==7.4.3
 
 #VIF
 statsmodels==0.14.0
+
+python-dotenv

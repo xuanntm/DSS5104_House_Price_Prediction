@@ -1,0 +1,23 @@
+# Project Configuration
+project:
+  name: "House Price Analysis"
+  version: "1.0.0"
+  author: "Your Name"
+
+# Data paths
+data:
+  raw: "data/raw/"
+  processed: "data/processed/"
+  external: "data/external/"
+
+# Model parameters
+model:
+  test_size: 0.2
+  random_state: 42
+  cross_validation_folds: 5
+
+# Visualization settings
+viz:
+  figure_size: [12, 8]
+  dpi: 300
+  style: "seaborn-v0_8"
