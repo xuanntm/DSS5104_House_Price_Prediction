@@ -96,13 +96,64 @@ view ->
 ```
 Categorical Feature
 
-Feature	Type	Recommendation	Reason
-| Feature    | Type     | Recommendation              | Reason                                                                                                |  
-|------------|----------|-----------------------------|-------------------------------------------------------------------------------------------------------|
-| condition  | Ordinal  | Label Encoding (1, 2, 3...) | Houses are "ranked" (e.g., 1 is poor, 5 is excellent). Maintaining this order helps the model.        | 
-| waterfront | Binary   | Keep as 0/1                 | It’s already numeric (0=No, 1=Yes), which is perfect for models.                                      | 
-| city       | Nominal  | Target Encoding or One-Hot  | Cities have no "order." If you have many cities, use Target Encoding to avoid creating 100+ columns.  |
-| yr_built   | Temporal | Binning or Age              | Don't treat this as a category. Transform it into house_age = current_year - yr_built                 |  
+| Feature    | Type                | Recommendation                      | Reason                                                                                                                                                                                               |
+| ---------- | ------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| condition  | Ordinal             | Label Encoding (keep numeric order) | Condition represents a ranked quality scale (e.g., poor → excellent). Maintaining numeric order allows the regression model to capture increasing value with better house condition.                 |
+| waterfront | Binary              | Keep as 0/1                         | Already encoded as binary (0 = No, 1 = Yes). Waterfront homes typically command a strong price premium and the variable is already suitable for regression models.                                   |
+| view       | Ordinal             | Keep numeric ranking                | View quality is typically ranked from poor to excellent. Maintaining the numeric order allows the model to capture increasing value for better scenic views.                                         |
+| city       | Nominal             | One-Hot Encoding or Target Encoding | Cities have no natural order. One-hot encoding avoids introducing artificial ranking. If many cities exist, target encoding helps reduce dimensionality while capturing neighborhood price levels.   |
+| statezip   | Nominal / Location  | Target Encoding                     | ZIP codes represent neighborhood-level housing markets. Target encoding summarizes each ZIP code using average house prices, avoiding hundreds of dummy variables while preserving location effects. |
+| renovated  | Binary (engineered) | Convert yr_renovated to binary      | Indicates whether a house has been renovated. Renovated houses often have higher market value due to modernization and improved condition.                                                           |
+
+Temporal Features
+
+| Feature        | Type       | Recommendation                       | Reason                                                                                                                                           |
+| -------------- | ---------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| yr_built       | Temporal   | Transform into house_age             | The construction year itself is less meaningful than the house age at the time of sale.                                                          |
+| house_age      | Numerical  | Use directly                         | Captures depreciation effects of aging houses. Older houses often have lower prices due to wear and outdated design.                             |
+| house_age_sq   | Polynomial | Include squared term                 | Allows the regression model to capture nonlinear aging effects. Very old homes may regain value due to historical or architectural significance. |
+| yr_renovated   | Temporal   | Convert to binary renovated variable | The renovation year itself may not be informative, but whether renovation occurred significantly affects house price.                            |
+| renovation_age | Numerical  | sale_year − yr_renovated             | Measures how recent the renovation occurred. Recent renovations often increase house value.                                                      |
+
+Size & Structure Features
+
+| Feature           | Type       | Recommendation                               | Reason                                                                                                                                     |
+| ----------------- | ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| sqft_above        | Numerical  | Keep numeric                                 | Represents above-ground living space, which typically has higher market value than basement space.                                         |
+| sqft_basement     | Numerical  | Keep numeric                                 | Represents basement area, which contributes to total house value but is usually priced lower than above-ground space.                      |
+| log_sqft_above    | Engineered | Apply log transformation                     | Living area influences price but with diminishing returns. Log transformation helps linear regression model the nonlinear relationship.    |
+| log_sqft_basement | Engineered | Apply log transformation                     | Basement area may have diminishing marginal value as size increases. Log transformation stabilizes variance.                               |
+| basement_ratio    | Engineered | sqft_basement / (sqft_above + sqft_basement) | Captures the proportion of basement space relative to total house area. Houses with large basements may have different valuation patterns. |
+
+Layout & Efficiency Features
+
+| Feature           | Type       | Recommendation                               | Reason                                                                                                                                     |
+| ----------------- | ---------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| sqft_above        | Numerical  | Keep numeric                                 | Represents above-ground living space, which typically has higher market value than basement space.                                         |
+| sqft_basement     | Numerical  | Keep numeric                                 | Represents basement area, which contributes to total house value but is usually priced lower than above-ground space.                      |
+| log_sqft_above    | Engineered | Apply log transformation                     | Living area influences price but with diminishing returns. Log transformation helps linear regression model the nonlinear relationship.    |
+| log_sqft_basement | Engineered | Apply log transformation                     | Basement area may have diminishing marginal value as size increases. Log transformation stabilizes variance.                               |
+| basement_ratio    | Engineered | sqft_basement / (sqft_above + sqft_basement) | Captures the proportion of basement space relative to total house area. Houses with large basements may have different valuation patterns. |
+
+Interaction Features
+
+| Feature           | Type             | Recommendation                          | Reason                                                                                                |
+| ----------------- | ---------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| bedrooms          | Numerical        | Keep numeric                            | Represents the number of sleeping spaces in the house and affects housing capacity.                   |
+| bathrooms         | Numerical        | Keep numeric                            | Bathrooms improve functionality and convenience, increasing property value.                           |
+| floors            | Numerical        | Keep numeric                            | Multi-floor houses may provide better space utilization and different price levels.                   |
+| sqft_per_bedroom  | Engineered Ratio | (sqft_above + sqft_basement) / bedrooms | Measures spaciousness per bedroom. Larger rooms are typically associated with higher quality housing. |
+| bedrooms_per_sqft | Engineered Ratio | bedrooms / (sqft_above + sqft_basement) | Captures housing density. Too many bedrooms relative to house size may indicate cramped layouts.      |
+
+Feature Engineering Strategy Summary
+
+| Principle                   | Explanation                                                                                                                                   |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Multicollinearity Reduction | sqft_living was removed due to severe multicollinearity with sqft_above and sqft_basement, as confirmed by extremely high VIF values (>3000). |
+| Nonlinear Transformations   | Log transformations allow linear regression to capture diminishing returns of house size.                                                     |
+| Ratio Features              | Ratios such as sqft_per_bedroom capture layout efficiency and spatial quality.                                                                |
+| Interaction Terms           | Interaction features allow the model to capture situations where the effect of one variable depends on another variable.                      |
+| Location Encoding           | City and ZIP code encoding capture geographic price differences, which are major drivers of housing values.                                   |
 
 
 
